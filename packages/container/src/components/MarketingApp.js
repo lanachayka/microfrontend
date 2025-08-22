@@ -1,12 +1,22 @@
 import React from "react";
-import {mount} from "marketing/MarketingApp";
+import { mount } from "marketing/MarketingApp";
+import { useHistory } from "react-router-dom";
 
 export default () => {
-    const ref = React.useRef(null);
+  const ref = React.useRef(null);
+  const history = useHistory();
 
-    React.useEffect(() => {
-        mount(ref.current, {});
-    }, []);
+  React.useEffect(() => {
+    const { onParentNavigate } = mount(ref.current, {
+      onNavigate: ({ pathname: nextPathname }) => {
+        const pathname = history.location.pathname;
+        if (pathname !== nextPathname) {
+          history.push(nextPathname);
+        }
+      },
+    });
+    history.listen(onParentNavigate);
+  }, []);
 
-    return <div ref={ref} />;
-}
+  return <div ref={ref} />;
+};
